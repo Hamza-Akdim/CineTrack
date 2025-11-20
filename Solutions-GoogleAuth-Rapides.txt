@@ -1,0 +1,49 @@
+SOLUTIONS RAPIDES POUR GOOGLE AUTH
+===================================
+
+Vous avez raison - les domaines autorisés ne sont PAS obligatoires pour localhost !
+
+PROBLÈME IDENTIFIÉ :
+===================
+Cross-Origin-Opener-Policy dans la console DevTools = problème de popup
+
+SOLUTIONS À TESTER (dans l'ordre) :
+
+1. DÉSACTIVER BLOQUEUR POPUP
+   - Chrome : Cliquer sur l'icône popup à droite de l'URL
+   - Autoriser les popups pour localhost:8080
+   - Actualiser et retester
+
+2. NAVIGATEUR DIFFÉRENT
+   - Tester avec Edge ou Firefox 
+   - Parfois Chrome a des restrictions supplémentaires
+
+3. INCOGNITO/PRIVÉ
+   - Ouvrir localhost:8080 en navigation privée
+   - Les extensions peuvent interférer
+
+4. VIDER CACHE COMPLETEMENT
+   - Chrome : F12 → Clic droit sur actualiser → "Vider le cache et effectuer une actualisation forcée"
+
+5. VÉRIFIER EXTENSIONS
+   - Désactiver temporairement les extensions de sécurité/privacy
+   - AdBlock, Privacy Badger, etc peuvent bloquer
+
+COMMANDES DE TEST :
+==================
+# Redémarrer serveur proprement
+cd C:\Users\Makchadi\Documents\Projet-Angular\CineTrack
+ng serve --port 8080 --open
+
+DIAGNOSTIC FIREBASE :
+====================
+Votre configuration Firebase semble correcte :
+- authDomain: "cinetrack-48eda.firebaseapp.com" ✅
+- apiKey présent ✅
+
+Si ça marchait avant, c'est probablement :
+1. Bloqueur popup activé
+2. Extension navigateur
+3. Cache corrompu
+
+AUCUNE MODIFICATION FIREBASE CONSOLE REQUISE ! 🎯

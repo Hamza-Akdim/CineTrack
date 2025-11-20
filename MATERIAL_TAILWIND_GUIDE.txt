@@ -1,0 +1,80 @@
+========================================
+INSTALLATION ANGULAR MATERIAL + TAILWIND
+========================================
+
+=== ANGULAR MATERIAL ===
+
+# Installation automatique (recommandée)
+ng add @angular/material
+
+# OU installation manuelle
+npm install @angular/material @angular/cdk @angular/animations
+
+=== TAILWIND CSS ===
+
+# Installation des dépendances
+npm install -D tailwindcss postcss autoprefixer
+
+# Initialisation de la configuration
+npx tailwindcss init -p
+
+=== CONFIGURATION TAILWIND ===
+
+Créer/Modifier le fichier : tailwind.config.js
+
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ["./src/**/*.{html,ts}"],
+  corePlugins: {
+    preflight: false, // Important pour éviter les conflits avec Material
+  },
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+
+=== STYLES CSS ===
+
+Ajouter au début de src/styles.css :
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Vos styles Angular Material resteront en dessous */
+
+=== UTILISATION COMBINÉE ===
+
+<!-- Exemple d'usage -->
+<div class="min-h-screen bg-gray-100 p-8">
+  <mat-card class="max-w-md mx-auto shadow-xl">
+    <mat-card-content class="p-6">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">CineTrack</h2>
+      
+      <div class="flex gap-4">
+        <mat-raised-button color="primary" class="flex-1">
+          Material Button
+        </mat-raised-button>
+        
+        <button class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+          Tailwind Button
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+=== BONNES PRATIQUES ===
+
+✅ Utilisez Angular Material pour :
+- Composants d'interface (buttons, cards, dialogs)
+- Navigation (toolbar, sidenav, tabs)
+- Formulaires (input, select, datepicker)
+
+✅ Utilisez Tailwind CSS pour :
+- Layout et positionnement (flex, grid)
+- Espacement (p-4, m-2, gap-6)
+- Couleurs personnalisées
+- Responsive design
+- États hover/focus

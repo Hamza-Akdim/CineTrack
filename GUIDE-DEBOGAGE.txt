@@ -1,0 +1,112 @@
+GUIDE DE DÉBOGAGE - AUTHENTIFICATION GOOGLE
+==========================================
+
+✅ SYSTÈME DE LOGS COMPLET IMPLÉMENTÉ
+
+📋 LOGS AJOUTÉS DANS CHAQUE COMPOSANT :
+
+1. AuthService (services/auth.service.ts)
+   🔧 Initialisation du service
+   👤 Changements d'état utilisateur
+   🚀 Démarrage connexion Google
+   ✅ Succès signInWithPopup
+   ❌ Erreurs détaillées
+
+2. LoginComponent (components/login/login.component.ts)
+   🔵 Clic bouton Google
+   🔵 Appel authService
+   ✅ Observable next()
+   ❌ Observable error()
+   🏁 Observable complete()
+
+3. Guards (guards/auth.guard.ts)
+   🛡️ Vérifications d'accès
+   ✅/❌ Autorisations
+   🔄 Redirections
+
+4. Gestionnaire Global (error-handler.ts)
+   🔴 Toutes les erreurs non gérées
+   📊 Affichage visuel dans le navigateur
+
+🎯 COMMENT UTILISER :
+
+ÉTAPE 1 : Ouvrir la Console DevTools
+-------------------------------------
+1. Ouvrir http://localhost:4200
+2. Appuyer sur F12
+3. Aller dans l'onglet "Console"
+4. Filtrer par niveau si besoin
+
+ÉTAPE 2 : Tester l'authentification Google
+-------------------------------------------
+1. Cliquer sur "Continuer avec Google"
+2. Observer les logs dans l'ordre :
+
+   FLUX NORMAL ATTENDU :
+   ---------------------
+   🔵 LoginComponent: Bouton Google cliqué
+   🔵 LoginComponent: Appel de authService.loginWithGoogle()
+   🚀 AuthService: Démarrage de la connexion Google...
+   📋 AuthService: GoogleAuthProvider créé
+   [Popup Google s'ouvre]
+   [Sélection du compte]
+   ✅ AuthService: signInWithPopup réussi!
+   👤 AuthService: Changement d'état utilisateur
+   ✅ AuthService: Utilisateur connecté
+   ✅ LoginComponent: Observable next()
+   🔄 LoginComponent: Navigation vers /dashboard
+   🛡️ authGuard: Vérification accès à /dashboard
+   ✅ authGuard: Accès autorisé
+   🏁 LoginComponent: Observable complete()
+
+ÉTAPE 3 : Analyser les erreurs
+-------------------------------
+Si une erreur survient, vous verrez :
+
+   ❌ AuthService: Erreur signInWithPopup: {code, message, stack}
+   ❌ LoginComponent: Observable error(): {détails}
+
+   + Un rectangle ROUGE en haut à droite du navigateur
+   + Détails complets dans la console
+
+📊 TYPES D'ERREURS POSSIBLES :
+
+1. auth/popup-closed-by-user
+   → L'utilisateur a fermé le popup
+   
+2. auth/popup-blocked
+   → Le navigateur a bloqué le popup
+   
+3. auth/cancelled-popup-request
+   → Une autre demande d'auth a annulé celle-ci
+   
+4. Cross-Origin-Opener-Policy
+   → Problème de politique CORS (cosmétique)
+
+5. auth/internal-error
+   → Erreur interne Firebase
+
+🔍 DÉBOGAGE AVANCÉ :
+
+Si aucun log n'apparaît après le clic :
+- Vérifier que la console n'est pas filtrée
+- Vérifier les onglets Console/Network/Application
+- Chercher "🔵" ou "🚀" dans la console
+- Activer "Preserve log" dans DevTools
+
+Si le popup ne s'ouvre pas :
+- Vérifier les bloqueurs de popup
+- Tester en navigation privée
+- Désactiver les extensions
+
+📱 RACCOURCIS UTILES :
+
+Ctrl+Shift+R : Vider cache et recharger
+F12 : Ouvrir/fermer DevTools  
+Ctrl+F (dans Console) : Rechercher dans les logs
+Ctrl+L : Vider la console
+
+🎬 PRÊT À TESTER !
+
+Démarrez ng serve et suivez les logs dans la console du navigateur.
+Chaque action sera tracée en temps réel !

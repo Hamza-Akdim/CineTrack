@@ -1,10 +1,10 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, provideZoneChangeDetection, ErrorHandler } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
-import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { environment } from './environments/environment';
 import { routes } from './app.routes';
+import { GlobalErrorHandler } from './error-handler';
 
 
 export const appConfig: ApplicationConfig = {
@@ -12,11 +12,13 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
 
+    // Gestionnaire d'erreurs global
+    { provide: ErrorHandler, useClass: GlobalErrorHandler },
+
     // Initialize Firebase App using environment config
     provideFirebaseApp(() => initializeApp(environment.firebase)),
 
-    // Firebase services
+    // Firebase Authentication
     provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore()),
   ],
 };
