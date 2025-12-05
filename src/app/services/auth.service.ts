@@ -7,6 +7,8 @@ import {
   updateProfile,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   User,
   authState
 } from '@angular/fire/auth';
@@ -53,6 +55,15 @@ export class AuthService {
         console.log('AuthService: Utilisateur déconnecté');
       }
     });
+
+    // Gérer le retour de redirection Google
+    getRedirectResult(this.auth).then((result) => {
+      if (result) {
+        console.log('AuthService: Retour de redirection Google réussi', result.user.email);
+      }
+    }).catch((error) => {
+      console.error('AuthService: Erreur retour redirection Google', error);
+    });
   }
 
   // Inscription avec email/password
@@ -76,28 +87,10 @@ export class AuthService {
 
   // Connexion avec Google
   loginWithGoogle(): Observable<void> {
-    console.log('AuthService: Démarrage de la connexion Google...');
+    console.log('AuthService: Démarrage de la connexion Google (Redirect)...');
     
     const provider = new GoogleAuthProvider();
-    console.log('AuthService: GoogleAuthProvider créé');
-    
-    const promise = signInWithPopup(this.auth, provider)
-      .then((result) => {
-        console.log('AuthService: signInWithPopup réussi!', {
-          user: result.user.email,
-          uid: result.user.uid,
-          displayName: result.user.displayName
-        });
-        return;
-      })
-      .catch((error) => {
-        console.error('AuthService: Erreur signInWithPopup:', {
-          code: error.code,
-          message: error.message,
-          stack: error.stack
-        });
-        throw error;
-      });
+    const promise = signInWithRedirect(this.auth, provider);
     
     return from(promise);
   }

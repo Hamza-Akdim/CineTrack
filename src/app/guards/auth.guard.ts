@@ -47,8 +47,8 @@ export const publicGuard: CanActivateFn = (route, state) => {
         console.log('publicGuard: Accès autorisé (non connecté)');
         return true;
       } else {
-        console.log('publicGuard: Déjà connecté - Redirection vers /dashboard');
-        router.navigate(['/dashboard']);
+        console.log('publicGuard: Déjà connecté - Redirection vers /home');
+        router.navigate(['/home']);
         return false;
       }
     })

@@ -4,7 +4,7 @@ import { authGuard, publicGuard } from './guards/auth.guard';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: '/login',
+    redirectTo: '/home',
     pathMatch: 'full',
   },
   {
@@ -19,7 +19,7 @@ export const routes: Routes = [
     path: 'home',
     loadComponent: () =>
       import('./components/home/home.component').then((m) => m.HomeComponent),
-    canActivate: [publicGuard],
+    canActivate: [authGuard],
   },
   {
     path: 'register',
