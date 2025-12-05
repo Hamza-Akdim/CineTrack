@@ -9,14 +9,14 @@ export const authGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
 
   console.log('authGuard: Vérification accès à', state.url);
-  
+
   // Utiliser authState$ pour attendre l'état réel de Firebase
   return authService.authState$().pipe(
     take(1), // Prendre seulement la première valeur
     map(user => {
       const isAuth = !!user;
       console.log('authGuard: État Firebase -', isAuth ? 'Authentifié' : 'Non authentifié', user?.email || '');
-      
+
       if (isAuth) {
         console.log('authGuard: Accès autorisé');
         return true;
@@ -35,14 +35,14 @@ export const publicGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
 
   console.log('publicGuard: Vérification accès à', state.url);
-  
+
   // Utiliser authState$ pour attendre l'état réel de Firebase
   return authService.authState$().pipe(
     take(1),
     map(user => {
       const isAuth = !!user;
       console.log('publicGuard: État Firebase -', isAuth ? 'Authentifié' : 'Non authentifié');
-      
+
       if (!isAuth) {
         console.log('publicGuard: Accès autorisé (non connecté)');
         return true;
