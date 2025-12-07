@@ -39,7 +39,7 @@ import { CommonModule } from '@angular/common';
           <input
             type="text"
             formControlName="displayName"
-            placeholder="Nom d'affichage"
+            placeholder="Nom complet"
             class="w-full px-4 py-3 rounded-full bg-black/70 border border-gray-600 placeholder-gray-400 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
 
