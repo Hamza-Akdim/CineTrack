@@ -3,86 +3,95 @@ import { TmdbService } from '../../services/tmdb.service';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-// import {Logo} from './../../assets/logo.png';
+import { AppLayoutComponent } from '../layout/app-layout.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, AppLayoutComponent],
   template: `
-    <div
-      class="min-h-screen w-full bg-gradient-to-b from-[#05070b] to-[#0d1117] text-white"
-    >
-      <!-- HEADER -->
-      <header
-        class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto"
-      >
-        <div class="flex items-center gap-2">
-          <img src="logo-cinetrack.png" class="w-48" alt="CineTrack" />
-        </div>
-
-        <div class="flex gap-3">
-          <button
-            class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 transition"
-          >
-            Connexion
-          </button>
-          <button
-            class="px-4 py-2 rounded-xl bg-white text-black hover:bg-gray-200 transition"
-          >
-            S'inscrire
-          </button>
-        </div>
-      </header>
-
-      <!-- SEARCH BAR -->
-      <div class="flex justify-center mt-8 px-4">
+    <app-layout>
+      <!-- SEARCH -->
+      <div class="flex justify-center mt-20 px-4">
         <div class="w-full max-w-2xl relative">
           <input
             type="text"
             [(ngModel)]="searchQuery"
             (keyup.enter)="onSearch()"
             placeholder="Chercher les films ..."
-            class="w-full px-5 py-3 pl-12 rounded-full text-black outline-none"
+            class="w-full px-5 py-3 pl-12 rounded-full text-black outline-none shadow-md"
           />
           <i class="fa fa-search absolute left-4 top-3 text-black/60"></i>
         </div>
       </div>
 
-      <!-- FILTER BUTTONS -->
-      <div class="flex flex-wrap justify-center gap-4 my-6 px-4">
-        <button
-          class="px-6 py-2 rounded-lg border border-blue-400 text-blue-300 hover:bg-blue-400/20 transition"
-        >
-          Genre
-        </button>
-        <button
-          class="px-6 py-2 rounded-lg border border-blue-400 text-blue-300 hover:bg-blue-400/20 transition"
-        >
-          Date
-        </button>
-        <button
-          class="px-6 py-2 rounded-lg border border-blue-400 text-blue-300 hover:bg-blue-400/20 transition"
-        >
-          Évaluation
-        </button>
+      <!-- FILTERS -->
+      <div
+        class="flex flex-col md:flex-row justify-center items-center mb-20 gap-6 bg-black/40 p-4 rounded-xl backdrop-blur-sm mx-4 my-6"
+      >
+        <!-- GENRE -->
+        <div class="flex flex-col text-left w-full md:w-auto">
+          <label class="text-xs text-gray-400 font-semibold mb-1">Genre</label>
+          <select
+            [(ngModel)]="selectedGenre"
+            (change)="applyFilters()"
+            class="px-3 py-2 bg-black/70 border border-gray-600 rounded text-white focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Tous les genres</option>
+            <option *ngFor="let genre of genres" [value]="genre.id">
+              {{ genre.name }}
+            </option>
+          </select>
+        </div>
+
+        <!-- YEAR -->
+        <div class="flex flex-col text-left w-full md:w-auto">
+          <label class="text-xs text-gray-400 font-semibold mb-1">Année</label>
+          <select
+            [(ngModel)]="selectedYear"
+            (change)="applyFilters()"
+            class="px-3 py-2 bg-black/70 border border-gray-600 rounded text-white focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Toutes les années</option>
+            <option *ngFor="let year of years" [value]="year">
+              {{ year }}
+            </option>
+          </select>
+        </div>
+
+        <!-- RATING -->
+        <div class="flex flex-col text-left w-full md:w-auto">
+          <label class="text-xs text-gray-400 font-semibold mb-1">
+            Note minimum : {{ minRating }}
+          </label>
+          <input
+            type="range"
+            min="0"
+            max="10"
+            step="1"
+            [(ngModel)]="minRating"
+            (change)="applyFilters()"
+            class="accent-blue-500 cursor-pointer"
+          />
+        </div>
       </div>
 
+      <!-- MOVIES -->
       <div class="max-w-7xl mx-auto px-4 mt-4 pb-16">
         <div
           class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6"
         >
           <div
             *ngFor="let movie of popularMovies"
-            class="cursor-pointer group bg-[#111418] rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105"
             [routerLink]="['/movie', movie.id]"
+            class="cursor-pointer group bg-[#111418] rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-transform hover:scale-[1.05]"
           >
             <div class="relative">
               <img
                 [src]="'https://image.tmdb.org/t/p/w500' + movie.poster_path"
-                alt="{{ movie.title }}"
                 class="w-full h-72 object-cover group-hover:opacity-90 transition"
               />
+
               <div
                 class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-3"
               >
@@ -90,9 +99,6 @@ import { FormsModule } from '@angular/forms';
                   {{ movie.title }}
                 </p>
                 <p class="text-xs text-gray-300">
-                  {{ movie.title }}
-                </p>
-                <p class="text-xs text-yellow-400 mt-1">
                   ⭐ {{ movie.vote_average }}/10
                 </p>
               </div>
@@ -100,14 +106,7 @@ import { FormsModule } from '@angular/forms';
           </div>
         </div>
       </div>
-
-      <!-- FOOTER -->
-      <footer class="w-full bg-black/20 py-6 mt-10 border-t border-white/10">
-        <div class="max-w-6xl mx-auto text-center text-gray-400 text-sm">
-          <p>CineTrack © {{ currentYear }} — Tous droits réservés.</p>
-        </div>
-      </footer>
-    </div>
+    </app-layout>
   `,
 })
 export class HomeComponent implements OnInit {
