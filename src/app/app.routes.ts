@@ -19,7 +19,7 @@ export const routes: Routes = [
     path: 'home',
     loadComponent: () =>
       import('./components/home/home.component').then((m) => m.HomeComponent),
-    canActivate: [publicGuard],
+    canActivate: [authGuard],
   },
   {
     path: 'register',
@@ -29,14 +29,22 @@ export const routes: Routes = [
       ),
     canActivate: [publicGuard],
   },
-  // {
-  //   path: 'dashboard',
-  //   loadComponent: () =>
-  //     import('./components/dashboard/dashboard.component').then(
-  //       (m) => m.DashboardComponent
-  //     ),
-  //   canActivate: [authGuard],
-  // },
+  {
+    path: 'movie/:id',
+    loadComponent: () =>
+      import('./components/movie-detail/movie-detail.component').then(
+        (m) => m.MovieDetailComponent
+      ),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'profile',
+    loadComponent: () =>
+      import('./components/profile/profile.component').then(
+        (m) => m.ProfileComponent
+      ),
+    canActivate: [authGuard],
+  },
   {
     path: '**',
     redirectTo: '/login',

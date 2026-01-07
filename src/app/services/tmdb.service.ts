@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../environments/environment';
 
+import { Movie, Credits, VideoResponse } from '../models/movie.model';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -32,6 +34,24 @@ export class TmdbService {
   discoverMovies(filters: any): Observable<any> {
     return this.http.get(`${this.apiUrl}/discover/movie`, {
       params: { api_key: environment.tmdbApiKey, ...filters }
+    });
+  }
+
+  getMovie(id: string): Observable<Movie> {
+    return this.http.get<Movie>(`${this.apiUrl}/movie/${id}`, {
+      params: { api_key: environment.tmdbApiKey }
+    });
+  }
+
+  getCredits(id: string): Observable<Credits> {
+    return this.http.get<Credits>(`${this.apiUrl}/movie/${id}/credits`, {
+      params: { api_key: environment.tmdbApiKey }
+    });
+  }
+
+  getVideos(id: string): Observable<VideoResponse> {
+    return this.http.get<VideoResponse>(`${this.apiUrl}/movie/${id}/videos`, {
+      params: { api_key: environment.tmdbApiKey }
     });
   }
 }
