@@ -14,10 +14,21 @@ import { Router } from '@angular/router';
       <div class="min-h-screen text-white pt-24 px-4 pb-12">
         <div class="max-w-2xl mx-auto space-y-8">
           
-          <div class="flex flex-col items-center gap-4">
-             <div class="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-4xl font-bold shadow-lg">
-                {{ user()?.displayName?.charAt(0) || user()?.email?.charAt(0) || 'U' | uppercase }}
+            <div class="flex flex-col items-center gap-4">
+             <div class="relative group cursor-pointer" (click)="fileInput.click()">
+                <div class="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-4xl font-bold shadow-lg overflow-hidden relative">
+                   <img *ngIf="user()?.photoURL" [src]="user()?.photoURL" class="w-full h-full object-cover" alt="Profile">
+                   <span *ngIf="!user()?.photoURL">{{ user()?.displayName?.charAt(0) || user()?.email?.charAt(0) || 'U' | uppercase }}</span>
+                   
+                   <!-- Overlay on hover -->
+                   <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <span class="text-xs text-white font-medium">Modifier</span>
+                   </div>
+                </div>
+                <!-- Hidden file input -->
+                <input #fileInput type="file" (change)="onFileSelected($event)" accept="image/*" class="hidden">
              </div>
+             
              <h1 class="text-3xl font-bold">{{ user()?.displayName || 'Utilisateur' }}</h1>
              <p class="text-gray-400">{{ user()?.email }}</p>
           </div>
@@ -122,9 +133,87 @@ export class ProfileComponent {
 
   constructor() {
     const u = this.user();
-    if (u && u.displayName) {
-      this.displayName = u.displayName;
+    if (u) {
+      if (u.displayName) this.displayName = u.displayName;
     }
+  }
+
+  async onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      if (file.type.match(/image\/*/) == null) {
+        this.profileMessage = "Seules les images sont supportées.";
+        this.profileSuccess = false;
+        return;
+      }
+
+      this.isLoadingProfile = true;
+      this.profileMessage = "Traitement de l'image...";
+
+      try {
+        const base64 = await this.compressImage(file);
+
+        this.profileMessage = "Sauvegarde...";
+        this.authService.saveProfileImage(base64).subscribe({
+          next: () => {
+            this.isLoadingProfile = false;
+            this.profileMessage = "Photo mise à jour avec succès !";
+            this.profileSuccess = true;
+          },
+          error: (error: any) => {
+            this.isLoadingProfile = false;
+            this.profileMessage = "Erreur lors de la sauvegarde.";
+            this.profileSuccess = false;
+            console.error(error);
+          }
+        });
+      } catch (e) {
+        this.isLoadingProfile = false;
+        this.profileMessage = "Erreur lors du traitement de l'image.";
+        this.profileSuccess = false;
+        console.error(e);
+      }
+    }
+  }
+
+  // Helper to compress image and convert to base64
+  private compressImage(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event: any) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const max_size = 300; // Resize to max 300px to keep size low
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > max_size) {
+              height *= max_size / width;
+              width = max_size;
+            }
+          } else {
+            if (height > max_size) {
+              width *= max_size / height;
+              height = max_size;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx!.drawImage(img, 0, 0, width, height);
+          // Compress quality to 0.7
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+          resolve(dataUrl);
+        };
+        img.onerror = (err) => reject(err);
+      };
+      reader.onerror = (err) => reject(err);
+    });
   }
 
   updateProfile() {

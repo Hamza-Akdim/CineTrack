@@ -61,9 +61,11 @@ import { CommonModule } from '@angular/common';
             <button
               type="button"
               (click)="loginWithGoogle()"
-              class="w-full py-3 rounded-full bg-white text-black hover:bg-gray-200 transition font-medium"
+              [disabled]="isLoadingGoogle"
+              class="w-full py-3 rounded-full bg-white text-black hover:bg-gray-200 transition font-medium disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              Continuer avec Google
+              <span *ngIf="isLoadingGoogle" class="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin"></span>
+              <span *ngIf="!isLoadingGoogle">Continuer avec Google</span>
             </button>
           </div>
 
@@ -108,24 +110,35 @@ export class LoginComponent {
     }
   }
 
+  isLoadingGoogle = false;
+
   loginWithGoogle() {
+    if (this.isLoadingGoogle) return;
+
+    this.isLoadingGoogle = true;
+    this.errorMessage = '';
 
     this.authService.loginWithGoogle().subscribe({
       next: () => {
-        this.router.navigate(['/login']);
+        this.isLoadingGoogle = false;
+        this.router.navigate(['/home']);
       },
       error: (error) => {
+        this.isLoadingGoogle = false;
         console.error(' LoginComponent: Observable error():', {
           code: error.code,
           message: error.message,
           fullError: error,
         });
-        this.errorMessage = this.getErrorMessage(error.code);
-      },
-      complete: () => {
-      },
-    });
 
+        // Handle popup closed by user or concurrent requests specially
+        if (error.code === 'auth/cancelled-popup-request' || error.code === 'auth/popup-closed-by-user') {
+          this.errorMessage = 'Connexion annulée.';
+        } else {
+          this.errorMessage = this.getErrorMessage(error.code);
+        }
+      }
+    });
   }
 
   private getErrorMessage(errorCode: string): string {
