@@ -14,10 +14,17 @@ import { AppLayoutComponent } from '../layout/app-layout.component';
   imports: [CommonModule, AppLayoutComponent],
   template: `
     <app-layout>
-      <div *ngIf="movie" class="relative w-full text-white -mt-[80px]">
+      <div
+        *ngIf="movie"
+        class="relative w-full overflow-x-hidden text-white -mt-[80px]"
+      >
 
         <!-- BACKDROP -->
-        <div class="absolute inset-0 h-[55vh] sm:h-[65vh] lg:h-[80vh] w-full z-0">
+        <div
+          class="absolute top-0 left-0 right-0
+          h-[55vh] sm:h-[65vh] lg:h-[80vh]
+          z-0 overflow-hidden"
+        >
           <div class="absolute inset-0 bg-gradient-to-t from-[#0d1117] via-[#0d1117]/90 to-transparent z-10"></div>
           <div class="absolute inset-0 bg-gradient-to-r from-[#0d1117] via-[#0d1117]/70 to-transparent z-10"></div>
 
@@ -53,7 +60,7 @@ import { AppLayoutComponent } from '../layout/app-layout.component';
           </div>
 
           <!-- INFOS -->
-          <div class="flex-1 space-y-6 w-full">
+          <div class="flex-1 space-y-6 w-full max-w-full">
 
             <!-- TITLE -->
             <div>
@@ -65,10 +72,11 @@ import { AppLayoutComponent } from '../layout/app-layout.component';
                 class="flex flex-wrap justify-center lg:justify-start
                 items-center gap-3 mt-3 text-sm sm:text-base"
               >
-                <span *ngIf="movie.release_date"
+                <span
+                  *ngIf="movie.release_date"
                   class="bg-white/10 px-3 py-1 rounded"
                 >
-                  {{ movie.release_date | date: 'yyyy' }}
+                  {{ movie.release_date | date:'yyyy' }}
                 </span>
 
                 <div class="flex items-center text-yellow-400 gap-1">
@@ -136,7 +144,6 @@ import { AppLayoutComponent } from '../layout/app-layout.component';
                 ></i>
                 {{ isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris' }}
               </button>
-
             </div>
 
             <!-- CASTING -->
@@ -144,7 +151,8 @@ import { AppLayoutComponent } from '../layout/app-layout.component';
               <h3 class="text-xl font-bold mb-4">Casting</h3>
 
               <div
-                class="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-hide"
+                class="flex gap-4 overflow-x-auto snap-x snap-mandatory
+                pb-4 scrollbar-hide max-w-full"
               >
                 <div
                   *ngFor="let actor of credits.cast | slice:0:12"
@@ -206,10 +214,7 @@ export class MovieDetailComponent implements OnInit {
           return this.tmdbService.getMovie(id);
         })
       )
-      .subscribe({
-        next: movie => (this.movie = movie),
-        error: err => console.error('Erreur chargement film', err),
-      });
+      .subscribe(movie => (this.movie = movie));
   }
 
   loadCredits(id: string) {
