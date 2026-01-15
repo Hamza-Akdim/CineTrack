@@ -13,15 +13,15 @@ export class TmdbService {
 
   private http = inject(HttpClient);
 
-  getPopularMovies(): Observable<any> {
+  getPopularMovies(page: number = 1): Observable<any> {
     return this.http.get(`${this.apiUrl}/movie/popular`, {
-      params: { api_key: environment.tmdbApiKey }
+      params: { api_key: environment.tmdbApiKey, page: page.toString() }
     });
   }
 
-  searchMovies(query: string): Observable<any> {
+  searchMovies(query: string, page: number = 1): Observable<any> {
     return this.http.get(`${this.apiUrl}/search/movie`, {
-      params: { api_key: environment.tmdbApiKey, query }
+      params: { api_key: environment.tmdbApiKey, query, page: page.toString() }
     });
   }
 
@@ -31,9 +31,9 @@ export class TmdbService {
     });
   }
 
-  discoverMovies(filters: any): Observable<any> {
+  discoverMovies(filters: any, page: number = 1): Observable<any> {
     return this.http.get(`${this.apiUrl}/discover/movie`, {
-      params: { api_key: environment.tmdbApiKey, ...filters }
+      params: { api_key: environment.tmdbApiKey, ...filters, page: page.toString() }
     });
   }
 

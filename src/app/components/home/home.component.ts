@@ -78,6 +78,16 @@ import { AppLayoutComponent } from '../layout/app-layout.component';
 
       <!-- MOVIES -->
       <div class="max-w-7xl mx-auto px-4 mt-4 pb-16">
+        
+        <!-- SECTION TITLE -->
+        <div class="mb-6 flex items-center gap-2">
+            <h2 class="text-2xl font-bold text-white">
+                <span *ngIf="isTrendingPage">Films du moment</span>
+                <span *ngIf="!isTrendingPage">Résultats</span>
+            </h2>
+            <div class="h-1 flex-grow bg-gray-800 rounded-full ml-4"></div>
+        </div>
+
         <div
           class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6"
         >
@@ -99,12 +109,36 @@ import { AppLayoutComponent } from '../layout/app-layout.component';
                   {{ movie.title }}
                 </p>
                 <p class="text-xs text-gray-300">
-                  ⭐ {{ movie.vote_average }}/10
+                  ⭐ {{ movie.vote_average | number:'1.1-1' }}/10
                 </p>
               </div>
             </div>
           </div>
         </div>
+
+        <!-- PAGINATION -->
+        <div class="flex justify-center items-center mt-12 gap-4">
+            <button 
+                (click)="changePage(currentPage - 1)"
+                [disabled]="currentPage === 1"
+                class="px-4 py-2 bg-gray-800 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700 transition"
+            >
+                <i class="fa fa-chevron-left mr-2"></i> Précédent
+            </button>
+
+            <span class="text-gray-400 font-medium">
+                Page <span class="text-white">{{ currentPage }}</span> sur <span class="text-white">{{ totalPages }}</span>
+            </span>
+
+            <button 
+                (click)="changePage(currentPage + 1)"
+                [disabled]="currentPage === totalPages"
+                class="px-4 py-2 bg-gray-800 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700 transition"
+            >
+                Suivant <i class="fa fa-chevron-right ml-2"></i>
+            </button>
+        </div>
+
       </div>
     </app-layout>
   `,
@@ -118,23 +152,30 @@ export class HomeComponent implements OnInit {
   minRating: number = 0;
   years: number[] = [];
 
+  // Pagination
+  currentPage: number = 1;
+  totalPages: number = 0;
+
   currentYear = new Date().getFullYear();
 
-  constructor(private tmdbService: TmdbService, private router: Router) {}
+  constructor(private tmdbService: TmdbService, private router: Router) { }
 
   onSearch() {
     if (this.searchQuery.trim()) {
-      this.router.navigate(['/search'], {
-        queryParams: { query: this.searchQuery },
-      });
+      this.currentPage = 1;
+      this.loadMovies();
+    } else {
+      this.selectedGenre = '';
+      this.selectedYear = '';
+      this.minRating = 0;
+      this.currentPage = 1;
+      this.loadMovies();
     }
   }
 
   ngOnInit() {
     this.generateYears();
-    this.tmdbService.getPopularMovies().subscribe((data) => {
-      this.popularMovies = data.results;
-    });
+    this.loadMovies();
     this.tmdbService.getGenres().subscribe((data) => {
       this.genres = data.genres;
     });
@@ -148,19 +189,46 @@ export class HomeComponent implements OnInit {
   }
 
   applyFilters() {
-    const filters: any = {};
-    if (this.selectedGenre) filters.with_genres = this.selectedGenre;
-    if (this.selectedYear) filters.primary_release_year = this.selectedYear;
-    if (this.minRating > 0) filters['vote_average.gte'] = this.minRating;
+    this.currentPage = 1;
+    this.loadMovies();
+  }
 
-    if (Object.keys(filters).length > 0) {
-      this.tmdbService.discoverMovies(filters).subscribe((data) => {
+  changePage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.loadMovies();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  loadMovies() {
+    if (this.searchQuery.trim()) {
+      this.tmdbService.searchMovies(this.searchQuery, this.currentPage).subscribe(data => {
         this.popularMovies = data.results;
+        this.totalPages = data.total_pages;
       });
     } else {
-      this.tmdbService.getPopularMovies().subscribe((data) => {
-        this.popularMovies = data.results;
-      });
+      const filters: any = {};
+      if (this.selectedGenre) filters.with_genres = this.selectedGenre;
+      if (this.selectedYear) filters.primary_release_year = this.selectedYear;
+      if (this.minRating > 0) filters['vote_average.gte'] = this.minRating;
+
+      if (Object.keys(filters).length > 0) {
+        this.tmdbService.discoverMovies(filters, this.currentPage).subscribe((data) => {
+          this.popularMovies = data.results;
+          this.totalPages = data.total_pages;
+        });
+      } else {
+        this.tmdbService.getPopularMovies(this.currentPage).subscribe((data) => {
+          this.popularMovies = data.results;
+          this.totalPages = data.total_pages;
+        });
+      }
     }
+  }
+
+  get isTrendingPage(): boolean {
+    const hasFilters = this.selectedGenre || this.selectedYear || this.minRating > 0;
+    return this.currentPage === 1 && !this.searchQuery && !hasFilters;
   }
 }
