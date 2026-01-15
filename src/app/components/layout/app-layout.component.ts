@@ -67,7 +67,7 @@ import { AuthService } from '../../services/auth.service';
                        </svg>
                     </span>
                     <!-- Text for Desktop -->
-                    <span class="hidden md:inline">Déconnecter</span>
+                    <span class="hidden md:inline">Se déconnecter</span>
                   </button>
                 </div>
             </ng-template>
