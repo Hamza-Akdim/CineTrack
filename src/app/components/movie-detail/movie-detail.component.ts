@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TmdbService } from '../../services/tmdb.service';
 import { AuthService } from '../../services/auth.service';
 import { Movie, Credits, VideoResponse } from '../../models/movie.model';
@@ -114,6 +114,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 })
 export class MovieDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private tmdbService = inject(TmdbService);
   private authService = inject(AuthService);
   private snackBar = inject(MatSnackBar);
@@ -159,6 +160,11 @@ export class MovieDetailComponent implements OnInit {
   }
 
   toggleFavorite() {
+    if (!this.authService.currentUser()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
     if (!this.movie) return;
 
     if (this.isFavorite) {
@@ -192,6 +198,11 @@ export class MovieDetailComponent implements OnInit {
   }
 
   toggleWatchlist() {
+    if (!this.authService.currentUser()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
     if (!this.movie) return;
 
     if (this.isInWatchlist) {

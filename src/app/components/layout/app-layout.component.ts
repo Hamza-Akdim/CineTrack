@@ -105,7 +105,7 @@ export class AppLayoutComponent {
 
   logout() {
     this.authService.logout().subscribe(() => {
-      this.router.navigate(['/login']);
+      this.router.navigate(['/home']);
     });
   }
 }

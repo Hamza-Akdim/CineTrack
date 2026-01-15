@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AppLayoutComponent } from '../layout/app-layout.component';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -17,7 +19,7 @@ import { AppLayoutComponent } from '../layout/app-layout.component';
           <input
             type="text"
             [(ngModel)]="searchQuery"
-            (keyup.enter)="onSearch()"
+            (ngModelChange)="onSearch()"
             placeholder="Chercher les films ..."
             class="w-full px-5 py-3 pl-12 rounded-full text-black outline-none shadow-md"
           />
@@ -118,25 +120,41 @@ export class HomeComponent implements OnInit {
   minRating: number = 0;
   years: number[] = [];
 
+  private searchSubject = new Subject<string>();
+
   currentYear = new Date().getFullYear();
 
   constructor(private tmdbService: TmdbService, private router: Router) {}
 
   onSearch() {
-    if (this.searchQuery.trim()) {
-      this.router.navigate(['/search'], {
-        queryParams: { query: this.searchQuery },
-      });
-    }
+    this.searchSubject.next(this.searchQuery);
   }
 
   ngOnInit() {
     this.generateYears();
+    
+    // Initial load
     this.tmdbService.getPopularMovies().subscribe((data) => {
       this.popularMovies = data.results;
     });
+
     this.tmdbService.getGenres().subscribe((data) => {
       this.genres = data.genres;
+    });
+
+    // Live Search Subscription
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(query => {
+        if (query.trim()) {
+           return this.tmdbService.searchMovies(query);
+        } else {
+           return this.tmdbService.getPopularMovies();
+        }
+      })
+    ).subscribe(data => {
+      this.popularMovies = data.results;
     });
   }
 
@@ -148,6 +166,7 @@ export class HomeComponent implements OnInit {
   }
 
   applyFilters() {
+    // Override search if filters are used
     const filters: any = {};
     if (this.selectedGenre) filters.with_genres = this.selectedGenre;
     if (this.selectedYear) filters.primary_release_year = this.selectedYear;
@@ -158,9 +177,14 @@ export class HomeComponent implements OnInit {
         this.popularMovies = data.results;
       });
     } else {
-      this.tmdbService.getPopularMovies().subscribe((data) => {
-        this.popularMovies = data.results;
-      });
+      // If no filters, revert to current search state or popular
+      if (this.searchQuery.trim()) {
+         this.tmdbService.searchMovies(this.searchQuery).subscribe(data => this.popularMovies = data.results);
+      } else {
+         this.tmdbService.getPopularMovies().subscribe((data) => {
+          this.popularMovies = data.results;
+        });
+      }
     }
   }
 }
