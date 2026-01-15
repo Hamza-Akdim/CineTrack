@@ -9,7 +9,8 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   User,
-  authState
+  authState,
+  sendPasswordResetEmail
 } from '@angular/fire/auth';
 import {
   Firestore,
@@ -133,6 +134,11 @@ export class AuthService {
     return from(promise);
   }
 
+  resetPassword(email: string) {
+  return from(sendPasswordResetEmail(this.auth, email));
+}
+
+
   logout(): Observable<void> {
     const promise = signOut(this.auth);
     return from(promise);
@@ -172,7 +178,7 @@ export class AuthService {
     // Ensure user doc exists (just in case)
     const favoriteRef = doc(this.firestore, `users/${user.uid}/favorites/${movie.id}`);
 
-    // We can also opportunistically update the parent doc here if we wanted, 
+    // We can also opportunistically update the parent doc here if we wanted,
     // but the login sync should cover it.
     return from(setDoc(favoriteRef, movieData));
   }

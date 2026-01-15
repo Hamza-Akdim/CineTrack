@@ -15,89 +15,113 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   template: `
     <div
-      class="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#05070b] to-[#0d1117] text-white px-4"
+      class="min-h-screen w-full
+           bg-gradient-to-b from-black via-[#140000] to-black
+           text-white"
     >
-      <div
-        class="w-full max-w-md bg-black/40 backdrop-blur-sm rounded-xl p-8 shadow-lg space-y-6"
-      >
-        <!-- LOGO -->
-        <div class="flex justify-center mb-4">
-          <img src="logo-cinetrack.png" alt="CineTrack" class="w-36 md:w-40" />
-        </div>
-
-        <!-- TITRE -->
-        <h2 class="text-center text-2xl md:text-3xl font-extrabold">
-          Créer un compte CineTrack
-        </h2>
-
-        <!-- FORMULAIRE -->
-        <form
-          [formGroup]="registerForm"
-          (ngSubmit)="onSubmit()"
-          class="space-y-4"
+      <!-- HEADER -->
+      <header class="w-full px-6 py-6 border-b border-gray-800">
+        <div
+          class="max-w-6xl mx-auto
+               flex justify-center sm:justify-start"
         >
-          <input
-            type="text"
-            formControlName="displayName"
-            placeholder="Nom complet"
-            class="w-full px-4 py-3 rounded-full bg-black/70 border border-gray-600 placeholder-gray-400 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
+          <img src="logo-cinetrack.png" alt="CineTrack" class="w-40 sm:w-56" />
+        </div>
+      </header>
 
-          <input
-            type="email"
-            formControlName="email"
-            placeholder="Adresse email"
-            class="w-full px-4 py-3 rounded-full bg-black/70 border border-gray-600 placeholder-gray-400 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
+      <!-- CONTENT -->
+      <div class="flex justify-center px-4 py-10">
+        <!-- CARD -->
+        <div class="w-full max-w-md bg-black/80 p-8 sm:p-10 space-y-6">
+          <h3 class="text-2xl sm:text-3xl font-bold text-center sm:text-left">
+            Créer un compte
+          </h3>
 
-          <input
-            type="password"
-            formControlName="password"
-            placeholder="Mot de passe (min 6 caractères)"
-            class="w-full px-4 py-3 rounded-full bg-black/70 border border-gray-600 placeholder-gray-400 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
-
-          <input
-            type="password"
-            formControlName="confirmPassword"
-            placeholder="Confirmer le mot de passe"
-            class="w-full px-4 py-3 rounded-full bg-black/70 border border-gray-600 placeholder-gray-400 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
-
-          <!-- ERREURS -->
-          <div
-            *ngIf="
-              registerForm.get('confirmPassword')?.touched &&
-              passwordsDoNotMatch()
-            "
-            class="text-red-500 text-sm text-center"
+          <!-- FORM -->
+          <form
+            [formGroup]="registerForm"
+            (ngSubmit)="onSubmit()"
+            class="space-y-4"
           >
-            Les mots de passe ne correspondent pas.
-          </div>
+            <input
+              type="text"
+              formControlName="displayName"
+              placeholder="Nom complet"
+              class="w-full px-4 py-4
+                   bg-[#333] text-white
+                   placeholder-gray-400
+                   focus:outline-none focus:ring-2 focus:ring-blue-600"
+            />
 
-          <div *ngIf="errorMessage" class="text-red-500 text-sm text-center">
-            {{ errorMessage }}
-          </div>
+            <input
+              type="email"
+              formControlName="email"
+              placeholder="Adresse email"
+              class="w-full px-4 py-4
+                   bg-[#333] text-white
+                   placeholder-gray-400
+                   focus:outline-none focus:ring-2 focus:ring-blue-600"
+            />
 
-          <!-- BOUTON -->
-          <button
-            type="submit"
-            [disabled]="registerForm.invalid || passwordsDoNotMatch()"
-            class="w-full py-3 rounded-full bg-blue-500 hover:bg-blue-600 transition font-medium disabled:opacity-50"
-          >
-            S'inscrire
-          </button>
+            <input
+              type="password"
+              formControlName="password"
+              placeholder="Mot de passe (min 6 caractères)"
+              class="w-full px-4 py-4
+                   bg-[#333] text-white
+                   placeholder-gray-400
+                   focus:outline-none focus:ring-2 focus:ring-blue-600"
+            />
 
-          <!-- LOGIN LINK -->
-          <div class="text-center mt-4 text-gray-400">
+            <input
+              type="password"
+              formControlName="confirmPassword"
+              placeholder="Confirmer le mot de passe"
+              class="w-full px-4 py-4
+                   bg-[#333] text-white
+                   placeholder-gray-400
+                   focus:outline-none focus:ring-2 focus:ring-blue-600"
+            />
+
+            <!-- ERREURS -->
+            <div
+              *ngIf="
+                registerForm.get('confirmPassword')?.touched &&
+                passwordsDoNotMatch()
+              "
+              class="text-blue-500 text-sm"
+            >
+              Les mots de passe ne correspondent pas.
+            </div>
+
+            <div *ngIf="errorMessage" class="text-blue-500 text-sm">
+              {{ errorMessage }}
+            </div>
+
+            <!-- SUBMIT -->
+            <button
+              type="submit"
+              [disabled]="registerForm.invalid || passwordsDoNotMatch()"
+              class="w-full py-4
+                   bg-blue-600 hover:bg-blue-700
+                   font-semibold transition
+                   disabled:opacity-50"
+            >
+              S'inscrire
+            </button>
+          </form>
+
+          <!-- FOOTER -->
+          <div class="text-gray-400 text-sm pt-4 text-center sm:text-left">
             Déjà un compte ?
             <a
               routerLink="/login"
-              class="text-blue-500 hover:text-blue-600 font-medium"
-              >Se connecter</a
+              class="text-white hover:underline font-medium"
             >
+              Se connecter
+            </a>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   `,
