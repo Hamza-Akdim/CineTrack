@@ -1,12 +1,12 @@
 export const environment = {
   production: true,
+  tmdbApiKey: 'f863c54a5946af1d1071c5a2826f61bf',
   firebase: {
-    apiKey: "YOUR_PROD_API_KEY",
-    authDomain: "YOUR_PROD_AUTH_DOMAIN",
-    projectId: "YOUR_PROD_PROJECT_ID",
-    storageBucket: "YOUR_PROD_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_PROD_MESSAGING_SENDER_ID",
-    appId: "YOUR_PROD_APP_ID"
-  }
+    apiKey: 'AIzaSyDHS1hHFCXvLpQ6rVIz2pG56Fs9GN0Be7Y',
+    authDomain: 'cinetrack-48eda.firebaseapp.com',
+    projectId: 'cinetrack-48eda',
+    storageBucket: 'cinetrack-48eda.firebasestorage.app',
+    messagingSenderId: '285338591435',
+    appId: '1:285338591435:web:72c4035d055dd151e0fb4e',
+  },
 };
-  

@@ -1,44 +1,62 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../environments/environment';
 
+import { Movie, Credits, VideoResponse } from '../models/movie.model';
+
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class TmdbService {
-    private apiUrl = 'https://api.themoviedb.org/3';
-    private apiKey = environment.tmdbApiKey;
+  private apiUrl = 'https://api.themoviedb.org/3';
 
-    constructor(private http: HttpClient) { }
+  private http = inject(HttpClient);
 
-    private getOptions(params: any = {}) {
-        return {
-            params: {
-                api_key: this.apiKey,
-                language: 'fr-FR',
-                ...params
-            }
-        };
-    }
+  getPopularMovies(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/movie/popular`, {
+      params: { api_key: environment.tmdbApiKey }
+    });
+  }
 
-    getPopularMovies(): Observable<any> {
-        return this.http.get(`${this.apiUrl}/movie/popular`, this.getOptions());
-    }
+  searchMovies(query: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/search/movie`, {
+      params: { api_key: environment.tmdbApiKey, query }
+    });
+  }
 
-    searchMovies(query: string): Observable<any> {
-        return this.http.get(`${this.apiUrl}/search/movie`, this.getOptions({ query }));
-    }
+  getGenres(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/genre/movie/list`, {
+      params: { api_key: environment.tmdbApiKey }
+    });
+  }
 
-    getMovieDetails(id: number): Observable<any> {
-        return this.http.get(`${this.apiUrl}/movie/${id}`, this.getOptions());
-    }
+  discoverMovies(filters: any): Observable<any> {
+    return this.http.get(`${this.apiUrl}/discover/movie`, {
+      params: { api_key: environment.tmdbApiKey, ...filters }
+    });
+  }
 
-    getGenres(): Observable<any> {
-        return this.http.get(`${this.apiUrl}/genre/movie/list`, this.getOptions());
-    }
+  getMovie(id: string): Observable<Movie> {
+    return this.http.get<Movie>(`${this.apiUrl}/movie/${id}`, {
+      params: { api_key: environment.tmdbApiKey }
+    });
+  }
 
-    discoverMovies(filters: any): Observable<any> {
-        return this.http.get(`${this.apiUrl}/discover/movie`, this.getOptions(filters));
-    }
+  getCredits(id: string): Observable<Credits> {
+    return this.http.get<Credits>(`${this.apiUrl}/movie/${id}/credits`, {
+      params: { api_key: environment.tmdbApiKey }
+    });
+  }
+
+  getVideos(id: string): Observable<VideoResponse> {
+    return this.http.get<VideoResponse>(`${this.apiUrl}/movie/${id}/videos`, {
+      params: { api_key: environment.tmdbApiKey }
+    });
+  }
 }
+
+
+
+
+

@@ -2,26 +2,29 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { CanActivateFn } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { map, take } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';  // Opérateurs RxJS pour manipuler les Observables
 
-export const authGuard: CanActivateFn = (route, state) => {
+
+// Private Routes : protège les pages privées
+export const authGuard: CanActivateFn = () => {
+
   const authService = inject(AuthService);
+
   const router = inject(Router);
 
-  console.log('authGuard: Vérification accès à', state.url);
 
-  // Utiliser authState$ pour attendre l'état réel de Firebase
-  return authService.authState$().pipe(
-    take(1), // Prendre seulement la première valeur
-    map(user => {
+  // authState$() : renvoie un Observable<User | null> based on the Firebase's state
+  return authService.authState$().pipe( // transforme l’état utilisateur
+    
+    take(1), // Prendre seulement la première valeur puis se désabonne automatiquement
+
+    map(user => {  // transforme la valeur reçu en true ou false selon l'existance du User
       const isAuth = !!user;
       console.log('authGuard: État Firebase -', isAuth ? 'Authentifié' : 'Non authentifié', user?.email || '');
 
       if (isAuth) {
-        console.log('authGuard: Accès autorisé');
         return true;
       } else {
-        console.log(' authGuard: Accès refusé - Redirection vers /login');
         router.navigate(['/login']);
         return false;
       }
@@ -29,25 +32,23 @@ export const authGuard: CanActivateFn = (route, state) => {
   );
 };
 
-// Guard pour les routes publiques (redirection si connecté)
-export const publicGuard: CanActivateFn = (route, state) => {
+// Publique Routes : empêche l’accès au login si déjà connecté
+export const publicGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  console.log('publicGuard: Vérification accès à', state.url);
 
   // Utiliser authState$ pour attendre l'état réel de Firebase
   return authService.authState$().pipe(
+
     take(1),
     map(user => {
       const isAuth = !!user;
-      console.log('publicGuard: État Firebase -', isAuth ? 'Authentifié' : 'Non authentifié');
 
       if (!isAuth) {
-        console.log('publicGuard: Accès autorisé (non connecté)');
+
         return true;
       } else {
-        console.log('publicGuard: Déjà connecté - Redirection vers /home');
         router.navigate(['/home']);
         return false;
       }

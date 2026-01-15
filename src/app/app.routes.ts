@@ -30,10 +30,18 @@ export const routes: Routes = [
     canActivate: [publicGuard],
   },
   {
-    path: 'dashboard',
+    path: 'movie/:id',
     loadComponent: () =>
-      import('./components/dashboard/dashboard.component').then(
-        (m) => m.DashboardComponent
+      import('./components/movie-detail/movie-detail.component').then(
+        (m) => m.MovieDetailComponent
+      ),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'profile',
+    loadComponent: () =>
+      import('./components/profile/profile.component').then(
+        (m) => m.ProfileComponent
       ),
     canActivate: [authGuard],
   },

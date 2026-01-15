@@ -1,12 +1,16 @@
-import { ApplicationConfig, provideZoneChangeDetection, ErrorHandler } from '@angular/core';
-import { provideHttpClient, withFetch } from '@angular/common/http';
+import {
+  ApplicationConfig,
+  provideZoneChangeDetection,
+  ErrorHandler,
+} from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
+import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { environment } from './environments/environment';
 import { routes } from './app.routes';
 import { GlobalErrorHandler } from './error-handler';
-
+import { provideHttpClient } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -21,8 +25,8 @@ export const appConfig: ApplicationConfig = {
 
     // Firebase Authentication
     provideAuth(() => getAuth()),
+    provideFirestore(() => getFirestore()),
 
-    // HTTP Client
-    provideHttpClient(withFetch()),
+    provideHttpClient(),
   ],
 };

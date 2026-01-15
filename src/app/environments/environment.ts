@@ -1,5 +1,6 @@
 export const environment = {
   production: false,
+  tmdbApiKey: "f863c54a5946af1d1071c5a2826f61bf" ,
   firebase: {
     apiKey: "AIzaSyDHS1hHFCXvLpQ6rVIz2pG56Fs9GN0Be7Y",
     authDomain: "cinetrack-48eda.firebaseapp.com",

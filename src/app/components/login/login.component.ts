@@ -1,5 +1,10 @@
 import { Component, inject } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
@@ -9,68 +14,69 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   template: `
-    <div class="min-h-screen flex items-center justify-center bg-gray-50">
-      <div class="max-w-md w-full space-y-8">
-        <div>
-          <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Connexion à CineTrack
-          </h2>
+   <div class="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#05070b] to-[#0d1117] text-white px-4">
+
+      <div class="w-full max-w-md bg-black/40 backdrop-blur-sm rounded-xl p-8 shadow-lg space-y-6">
+
+        <!-- LOGO -->
+        <div class="flex justify-center mb-4">
+          <img src="logo-cinetrack.png" alt="CineTrack" class="w-36 md:w-40" />
         </div>
-        <form class="mt-8 space-y-6" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-          <div class="rounded-md shadow-sm -space-y-px">
-            <div>
-              <input
-                formControlName="email"
-                type="email"
-                class="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="Adresse email"
-              />
-            </div>
-            <div>
-              <input
-                formControlName="password"
-                type="password"
-                class="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="Mot de passe"
-              />
-            </div>
+
+        <!-- TITRE -->
+        <h2 class="text-center text-2xl md:text-3xl font-extrabold">Connexion à CineTrack</h2>
+
+        <!-- FORMULAIRE -->
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
+
+          <input
+            type="email"
+            formControlName="email"
+            placeholder="Adresse email"
+            class="w-full px-4 py-3 rounded-full bg-black/70 border border-gray-600 placeholder-gray-400 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+
+          <input
+            type="password"
+            formControlName="password"
+            placeholder="Mot de passe"
+            class="w-full px-4 py-3 rounded-full bg-black/70 border border-gray-600 placeholder-gray-400 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+
+          <!-- ERREUR -->
+          <div *ngIf="errorMessage" class="text-red-500 text-sm text-center">
+            {{ errorMessage }}
           </div>
 
-          <div>
+          <!-- BOUTONS -->
+          <div class="space-y-3 mt-2">
             <button
               type="submit"
               [disabled]="loginForm.invalid"
-              class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+              class="w-full py-3 rounded-full bg-blue-500 hover:bg-blue-600 transition font-medium disabled:opacity-50"
             >
               Se connecter
             </button>
-          </div>
 
-          <div>
             <button
               type="button"
               (click)="loginWithGoogle()"
-              class="w-full flex justify-center py-2 px-4 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+              class="w-full py-3 rounded-full bg-white text-black hover:bg-gray-200 transition font-medium"
             >
               Continuer avec Google
             </button>
           </div>
 
-          <div class="text-center">
-            <a routerLink="/register" class="font-medium text-indigo-600 hover:text-indigo-500">
-              Pas de compte ? S'inscrire
-            </a>
+          <!-- REGISTER -->
+          <div class="text-center mt-4 text-gray-400">
+            Pas de compte ?
+            <a routerLink="/register" class="text-blue-500 hover:text-blue-600 font-medium">S'inscrire</a>
           </div>
 
-          @if (errorMessage) {
-            <div class="text-red-600 text-sm text-center">
-              {{ errorMessage }}
-            </div>
-          }
         </form>
       </div>
     </div>
-  `
+  `,
 })
 export class LoginComponent {
   private fb = inject(FormBuilder);
@@ -83,49 +89,43 @@ export class LoginComponent {
   constructor() {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      password: ['', [Validators.required, Validators.minLength(6)]],
     });
   }
 
   onSubmit() {
     if (this.loginForm.valid) {
       const { email, password } = this.loginForm.value;
-      
+
       this.authService.login(email, password).subscribe({
         next: () => {
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/home']);
         },
         error: (error) => {
           this.errorMessage = this.getErrorMessage(error.code);
-        }
+        },
       });
     }
   }
 
   loginWithGoogle() {
-    // console.log('🔵 LoginComponent: Bouton Google cliqué');
-    // console.log('🔵 LoginComponent: Appel de authService.loginWithGoogle()');
-    
+
     this.authService.loginWithGoogle().subscribe({
       next: () => {
-        // console.log('✅ LoginComponent: Observable next() - Authentification réussie');
-        // console.log('🔄 LoginComponent: Navigation vers /dashboard');
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/login']);
       },
       error: (error) => {
         console.error(' LoginComponent: Observable error():', {
           code: error.code,
           message: error.message,
-          fullError: error
+          fullError: error,
         });
         this.errorMessage = this.getErrorMessage(error.code);
       },
       complete: () => {
-        // console.log('🏁 LoginComponent: Observable complete()');
-      }
+      },
     });
-    
-    // console.log('🔵 LoginComponent: Souscription à l\'Observable créée');
+
   }
 
   private getErrorMessage(errorCode: string): string {
