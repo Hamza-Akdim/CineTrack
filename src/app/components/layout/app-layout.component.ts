@@ -53,7 +53,7 @@ import { AuthService } from '../../services/auth.service';
                   <!-- Profile Link -->
                   <a routerLink="/profile" class="flex items-center gap-2 hover:bg-white/10 px-2 py-1 rounded-xl transition">
                       <div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-sm font-bold overflow-hidden relative border border-white/20">
-                          <img *ngIf="user()?.photoURL" [src]="user()?.photoURL" class="w-full h-full object-cover" alt="Profile">
+                          <img *ngIf="user()?.photoURL" [src]="user()?.photoURL" class="w-full h-full object-cover" alt="">
                           <span *ngIf="!user()?.photoURL">{{ user()?.displayName?.charAt(0) || user()?.email?.charAt(0) || 'U' | uppercase }}</span>
                       </div>
                   </a>
