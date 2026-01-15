@@ -189,7 +189,7 @@ export class AuthService {
 
   isFavorite(movieId: number): Observable<boolean> {
     return this.getFavorites().pipe(
-      map(favorites => favorites.some(m => m.id === movieId))
+      map(favorites => favorites.some(m => m.id == movieId))
     );
   }
 

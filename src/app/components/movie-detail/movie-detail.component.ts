@@ -8,10 +8,12 @@ import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { AppLayoutComponent } from '../layout/app-layout.component';
 
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+
 @Component({
   selector: 'app-movie-detail',
   standalone: true,
-  imports: [CommonModule, AppLayoutComponent],
+  imports: [CommonModule, AppLayoutComponent, MatSnackBarModule],
   template: `
     <app-layout>
       <div *ngIf="movie" class="relative w-full text-white -mt-[80px]"> 
@@ -70,7 +72,7 @@ import { AppLayoutComponent } from '../layout/app-layout.component';
                 class="px-8 py-3 rounded-full font-bold transition flex items-center gap-2 border border-gray-500 hover:bg-white/10"
                 [class.bg-red-600]="isFavorite" [class.border-transparent]="isFavorite" [class.text-white]="isFavorite">
                 <i class="fas" [class.fa-heart]="isFavorite" [class.fa-heart-open]="!isFavorite"></i> 
-                {{ isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris' }}
+                {{ isFavorite ? 'Déjà favoris' : 'Ajouter aux favoris' }}
               </button>
             </div>
 
@@ -107,6 +109,7 @@ export class MovieDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private tmdbService = inject(TmdbService);
   private authService = inject(AuthService);
+  private snackBar = inject(MatSnackBar);
 
   movie: Movie | null = null;
   credits: Credits | null = null;
@@ -153,10 +156,21 @@ export class MovieDetailComponent implements OnInit {
     if (this.isFavorite) {
       this.authService.removeFavorite(this.movie.id).subscribe(() => {
         this.isFavorite = false;
+        this.snackBar.open('Retiré des favoris', 'Fermer', {
+          duration: 2000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom'
+        });
       });
     } else {
       this.authService.addFavorite(this.movie).subscribe(() => {
         this.isFavorite = true;
+        this.snackBar.open('Ajouté aux favoris avec succès !', 'OK', {
+          duration: 3000,
+          panelClass: ['green-snackbar'],
+          horizontalPosition: 'center',
+          verticalPosition: 'top'
+        });
       });
     }
   }
