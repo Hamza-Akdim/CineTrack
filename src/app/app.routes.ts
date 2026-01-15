@@ -54,6 +54,15 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'watchlist',
+    loadComponent: () =>
+      import('./components/watchlist/watchlist.component').then(
+        (m) => m.WatchlistComponent
+      ),
+    canActivate: [authGuard],
+  }, 
+
+  {
     path: '**',
     redirectTo: '/login',
   },

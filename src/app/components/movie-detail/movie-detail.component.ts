@@ -74,6 +74,13 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
                 <i class="fas" [class.fa-heart]="isFavorite" [class.fa-heart-open]="!isFavorite"></i> 
                 {{ isFavorite ? 'Déjà favoris' : 'Ajouter aux favoris' }}
               </button>
+
+              <button (click)="toggleWatchlist()" 
+                class="px-8 py-3 rounded-full font-bold transition flex items-center gap-2 border border-gray-500 hover:bg-white/10"
+                [class.bg-blue-600]="isInWatchlist" [class.border-transparent]="isInWatchlist" [class.text-white]="isInWatchlist">
+                <i class="fas" [class.fa-check]="isInWatchlist" [class.fa-plus]="!isInWatchlist"></i> 
+                {{ isInWatchlist ? 'Dans la Watchlist' : 'Ajouter à la Watchlist' }}
+              </button>
             </div>
 
             <div *ngIf="credits" class="pt-8">
@@ -121,6 +128,7 @@ export class MovieDetailComponent implements OnInit {
       switchMap(params => {
         const id = params['id'];
         this.checkIfFavorite(id);
+        this.checkIfInWatchlist(id);
         this.loadCredits(id);
         this.loadVideos(id);
         return this.tmdbService.getMovie(id);
@@ -166,6 +174,39 @@ export class MovieDetailComponent implements OnInit {
       this.authService.addFavorite(this.movie).subscribe(() => {
         this.isFavorite = true;
         this.snackBar.open('Ajouté aux favoris avec succès !', 'OK', {
+          duration: 3000,
+          panelClass: ['green-snackbar'],
+          horizontalPosition: 'center',
+          verticalPosition: 'top'
+        });
+      });
+    }
+  }
+
+  // --- WATCHLIST ---
+
+  isInWatchlist: boolean = false;
+
+  checkIfInWatchlist(id: string) {
+    this.authService.isInWatchlist(Number(id)).subscribe(inList => this.isInWatchlist = inList);
+  }
+
+  toggleWatchlist() {
+    if (!this.movie) return;
+
+    if (this.isInWatchlist) {
+      this.authService.removeFromWatchlist(this.movie.id).subscribe(() => {
+        this.isInWatchlist = false;
+        this.snackBar.open('Retiré de la Watchlist', 'Fermer', {
+          duration: 2000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom'
+        });
+      });
+    } else {
+      this.authService.addToWatchlist(this.movie).subscribe(() => {
+        this.isInWatchlist = true;
+        this.snackBar.open('Ajouté à la Watchlist !', 'OK', {
           duration: 3000,
           panelClass: ['green-snackbar'],
           horizontalPosition: 'center',

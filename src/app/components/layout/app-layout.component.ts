@@ -50,6 +50,14 @@ import { AuthService } from '../../services/auth.service';
                     <span class="text-[10px] font-medium uppercase tracking-wide">Favoris</span>
                   </a>
 
+                  <!-- Watchlist Link -->
+                  <a routerLink="/watchlist" class="group flex flex-col items-center gap-0.5 text-gray-300 hover:text-blue-500 transition" title="Ma Liste">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 group-hover:scale-110 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                    <span class="text-[10px] font-medium uppercase tracking-wide">Watchlist</span>
+                  </a>
+
                   <!-- Profile Link -->
                   <a routerLink="/profile" class="flex items-center gap-2 hover:bg-white/10 px-2 py-1 rounded-xl transition">
                       <div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-sm font-bold overflow-hidden relative border border-white/20">

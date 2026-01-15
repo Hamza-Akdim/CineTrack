@@ -200,4 +200,46 @@ export class AuthService {
     const userDoc = doc(this.firestore, `users/${user.uid}`);
     return from(setDoc(userDoc, { photoURL: base64Image }, { merge: true }));
   }
+
+  // --- WATCHLIST ---
+
+  getWatchlist(): Observable<Movie[]> {
+    return this.authState$().pipe(
+      switchMap(user => {
+        if (!user) return of([]);
+        const watchlistRef = collection(this.firestore, `users/${user.uid}/watchlist`);
+        return runInInjectionContext(this.injector, () =>
+          collectionData(watchlistRef, { idField: 'id' }) as Observable<Movie[]>
+        ).pipe(
+          catchError((error) => {
+            console.error('Error fetching watchlist:', error);
+            return of([]);
+          })
+        );
+      })
+    );
+  }
+
+  addToWatchlist(movie: Movie): Observable<void> {
+    const user = this.auth.currentUser;
+    if (!user) return of();
+
+    const movieData: any = { ...movie };
+    const watchlistRef = doc(this.firestore, `users/${user.uid}/watchlist/${movie.id}`);
+    return from(setDoc(watchlistRef, movieData));
+  }
+
+  removeFromWatchlist(movieId: number): Observable<void> {
+    const user = this.auth.currentUser;
+    if (!user) return of();
+
+    const watchlistRef = doc(this.firestore, `users/${user.uid}/watchlist/${movieId}`);
+    return from(deleteDoc(watchlistRef));
+  }
+
+  isInWatchlist(movieId: number): Observable<boolean> {
+    return this.getWatchlist().pipe(
+      map(watchlist => watchlist.some(m => m.id == movieId))
+    );
+  }
 }
