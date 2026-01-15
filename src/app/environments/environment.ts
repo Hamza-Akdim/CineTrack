@@ -8,5 +8,7 @@ export const environment = {
     storageBucket: "cinetrack-48eda.firebasestorage.app",
     messagingSenderId: "285338591435",
     appId: "1:285338591435:web:72c4035d055dd151e0fb4e"
-  }
+  },
+
 };
+

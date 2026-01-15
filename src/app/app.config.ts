@@ -11,6 +11,7 @@ import { environment } from './environments/environment';
 import { routes } from './app.routes';
 import { GlobalErrorHandler } from './error-handler';
 import { provideHttpClient } from '@angular/common/http';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -28,5 +29,6 @@ export const appConfig: ApplicationConfig = {
     provideFirestore(() => getFirestore()),
 
     provideHttpClient(),
+    provideAnimationsAsync(),
   ],
 };
