@@ -17,7 +17,7 @@ import { AuthService } from '../../services/auth.service';
         <div
           class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4"
         >
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 cursor-pointer" routerLink="/home">
             <img
               src="logo-cinetrack.png"
               class="w-40 md:w-48"
