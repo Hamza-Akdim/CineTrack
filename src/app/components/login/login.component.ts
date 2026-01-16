@@ -72,7 +72,7 @@ import { AuthService } from '../../services/auth.service';
             </div>
 
             <!-- ERROR -->
-            <div *ngIf="errorMessage" class="text-blue-500 text-sm">
+            <div *ngIf="errorMessage" class="text-red-500 text-sm">
               {{ errorMessage }}
             </div>
 

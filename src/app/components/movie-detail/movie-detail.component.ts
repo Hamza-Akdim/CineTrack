@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
 
 import { TmdbService } from '../../services/tmdb.service';
@@ -8,10 +8,12 @@ import { AuthService } from '../../services/auth.service';
 import { Movie, Credits } from '../../models/movie.model';
 import { AppLayoutComponent } from '../layout/app-layout.component';
 
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+
 @Component({
   selector: 'app-movie-detail',
   standalone: true,
-  imports: [CommonModule, AppLayoutComponent],
+  imports: [CommonModule, AppLayoutComponent, MatSnackBarModule],
   template: `
     <app-layout>
       <div
@@ -128,7 +130,7 @@ import { AppLayoutComponent } from '../layout/app-layout.component';
                 Bande-annonce
               </a>
 
-              <button
+             <button
                 (click)="toggleFavorite()"
                 class="w-full sm:w-auto px-6 py-3
                 rounded-full font-bold transition
@@ -143,6 +145,13 @@ import { AppLayoutComponent } from '../layout/app-layout.component';
                   [class.far]="!isFavorite"
                 ></i>
                 {{ isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris' }}
+              </button>
+
+              <button (click)="toggleWatchlist()"
+                class="px-8 py-3 rounded-full font-bold transition flex items-center justify-center gap-2 border border-gray-500 hover:bg-white/10"
+                [class.bg-blue-600]="isInWatchlist" [class.border-transparent]="isInWatchlist" [class.text-white]="isInWatchlist">
+                <i class="fas" [class.fa-check]="isInWatchlist" [class.fa-plus]="!isInWatchlist"></i>
+                {{ isInWatchlist ? 'Dans la Watchlist' : 'Ajouter à la Watchlist' }}
               </button>
             </div>
 
@@ -195,8 +204,10 @@ import { AppLayoutComponent } from '../layout/app-layout.component';
 })
 export class MovieDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private tmdbService = inject(TmdbService);
   private authService = inject(AuthService);
+  private snackBar = inject(MatSnackBar);
 
   movie: Movie | null = null;
   credits: Credits | null = null;
@@ -204,17 +215,21 @@ export class MovieDetailComponent implements OnInit {
   isFavorite = false;
 
   ngOnInit() {
-    this.route.params
-      .pipe(
-        switchMap(params => {
-          const id = params['id'];
-          this.checkIfFavorite(id);
-          this.loadCredits(id);
-          this.loadVideos(id);
-          return this.tmdbService.getMovie(id);
-        })
-      )
-      .subscribe(movie => (this.movie = movie));
+    this.route.params.pipe(
+      switchMap(params => {
+        const id = params['id'];
+        this.checkIfFavorite(id);
+        this.checkIfInWatchlist(id);
+        this.loadCredits(id);
+        this.loadVideos(id);
+        return this.tmdbService.getMovie(id);
+      })
+    ).subscribe({
+      next: (movie) => {
+        this.movie = movie;
+      },
+      error: (err) => console.error('Erreur chargement film', err)
+    });
   }
 
   loadCredits(id: string) {
@@ -237,12 +252,70 @@ export class MovieDetailComponent implements OnInit {
   }
 
   toggleFavorite() {
+    if (!this.authService.currentUser()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
     if (!this.movie) return;
 
-    const action$ = this.isFavorite
-      ? this.authService.removeFavorite(this.movie.id)
-      : this.authService.addFavorite(this.movie);
+    if (this.isFavorite) {
+      this.authService.removeFavorite(this.movie.id).subscribe(() => {
+        this.isFavorite = false;
+        this.snackBar.open('Retiré des favoris', 'Fermer', {
+          duration: 2000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom'
+        });
+      });
+    } else {
+      this.authService.addFavorite(this.movie).subscribe(() => {
+        this.isFavorite = true;
+        this.snackBar.open('Ajouté aux favoris avec succès !', 'OK', {
+          duration: 3000,
+          panelClass: ['green-snackbar'],
+          horizontalPosition: 'center',
+          verticalPosition: 'top'
+        });
+      });
+    }
+  }
 
-    action$.subscribe(() => (this.isFavorite = !this.isFavorite));
+  // --- WATCHLIST ---
+
+  isInWatchlist: boolean = false;
+
+  checkIfInWatchlist(id: string) {
+    this.authService.isInWatchlist(Number(id)).subscribe(inList => this.isInWatchlist = inList);
+  }
+
+  toggleWatchlist() {
+    if (!this.authService.currentUser()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    if (!this.movie) return;
+
+    if (this.isInWatchlist) {
+      this.authService.removeFromWatchlist(this.movie.id).subscribe(() => {
+        this.isInWatchlist = false;
+        this.snackBar.open('Retiré de la Watchlist', 'Fermer', {
+          duration: 2000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom'
+        });
+      });
+    } else {
+      this.authService.addToWatchlist(this.movie).subscribe(() => {
+        this.isInWatchlist = true;
+        this.snackBar.open('Ajouté à la Watchlist !', 'OK', {
+          duration: 3000,
+          panelClass: ['green-snackbar'],
+          horizontalPosition: 'center',
+          verticalPosition: 'top'
+        });
+      });
+    }
   }
 }

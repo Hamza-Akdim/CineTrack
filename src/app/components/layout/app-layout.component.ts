@@ -17,60 +17,293 @@ import { AuthService } from '../../services/auth.service';
         <div
           class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4"
         >
-          <div class="flex items-center gap-2 cursor-pointer" routerLink="/">
+          <div
+            class="flex items-center gap-2 cursor-pointer"
+            routerLink="/home"
+          >
             <img
               src="logo-cinetrack.png"
               class="w-40 md:w-48"
               alt="CineTrack"
             />
           </div>
-
-          <div class="flex gap-3 items-center">
+          <!-- Desktop -->
+          <div class="hidden md:flex gap-3 items-center">
             <ng-container *ngIf="!user(); else loggedIn">
-                <a
+              <a
                 routerLink="/login"
                 class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 transition text-white font-medium"
-                >
+              >
                 Connexion
-                </a>
-                <a
+              </a>
+              <a
                 routerLink="/register"
                 class="px-4 py-2 rounded-xl bg-white text-black hover:bg-gray-200 transition font-medium"
-                >
+              >
                 S'inscrire
-                </a>
+              </a>
             </ng-container>
             <ng-template #loggedIn>
-                <div class="flex items-center gap-4">
-                  <!-- Favorites Link -->
-                  <a routerLink="/favorites" class="group flex flex-col items-center gap-0.5 text-gray-300 hover:text-red-500 transition" title="Mes Favoris">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 group-hover:scale-110 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              <div class="flex items-center gap-4">
+                <!-- Favorites Link -->
+                <a
+                  routerLink="/favorites"
+                  class="group flex flex-col items-center gap-0.5 text-gray-300 hover:text-red-500 transition"
+                  title="Mes Favoris"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6 group-hover:scale-110 transition"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                    />
+                  </svg>
+                  <span class="text-[10px] font-medium uppercase tracking-wide"
+                    >Favoris</span
+                  >
+                </a>
+
+                <!-- Watchlist Link -->
+                <a
+                  routerLink="/watchlist"
+                  class="group flex flex-col items-center gap-0.5 text-gray-300 hover:text-blue-500 transition"
+                  title="Ma Liste"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6 group-hover:scale-110 transition"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                    />
+                  </svg>
+                  <span class="text-[10px] font-medium uppercase tracking-wide"
+                    >Watchlist</span
+                  >
+                </a>
+
+                <!-- Profile Link -->
+                <a
+                  routerLink="/profile"
+                  class="flex items-center gap-2 hover:bg-white/10 px-2 py-1 rounded-xl transition"
+                >
+                  <div
+                    class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-sm font-bold overflow-hidden relative border border-white/20"
+                  >
+                    <img
+                      *ngIf="user()?.photoURL"
+                      [src]="user()?.photoURL"
+                      class="w-full h-full object-cover"
+                      alt=""
+                    />
+                    <span *ngIf="!user()?.photoURL">{{
+                      user()?.displayName?.charAt(0) ||
+                        user()?.email?.charAt(0) ||
+                        'U' | uppercase
+                    }}</span>
+                  </div>
+                </a>
+
+                <!-- Logout Button -->
+                <button
+                  (click)="logout()"
+                  class="text-gray-300 hover:text-white transition font-medium text-sm md:bg-white/10 md:px-4 md:py-2 md:rounded-lg md:hover:bg-white/20"
+                  title="Se déconnecter"
+                >
+                  <!-- Icon for Mobile -->
+                  <span class="md:hidden">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                      />
                     </svg>
-                    <span class="text-[10px] font-medium uppercase tracking-wide">Favoris</span>
-                  </a>
-
-                  <!-- Profile Link -->
-                  <a routerLink="/profile" class="flex items-center gap-2 hover:bg-white/10 px-2 py-1 rounded-xl transition">
-                      <div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-sm font-bold overflow-hidden relative border border-white/20">
-                          <img *ngIf="user()?.photoURL" [src]="user()?.photoURL" class="w-full h-full object-cover" alt="">
-                          <span *ngIf="!user()?.photoURL">{{ user()?.displayName?.charAt(0) || user()?.email?.charAt(0) || 'U' | uppercase }}</span>
-                      </div>
-                  </a>
-
-                  <!-- Logout Button -->
-                  <button (click)="logout()" class="text-gray-300 hover:text-white transition font-medium text-sm md:bg-white/10 md:px-4 md:py-2 md:rounded-lg md:hover:bg-white/20" title="Se déconnecter">
-                    <!-- Icon for Mobile -->
-                    <span class="md:hidden">
-                       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                       </svg>
-                    </span>
-                    <!-- Text for Desktop -->
-                    <span class="hidden md:inline">Déconnecter</span>
-                  </button>
-                </div>
+                  </span>
+                  <!-- Text for Desktop -->
+                  <span class="hidden md:inline">Se déconnecter</span>
+                </button>
+              </div>
             </ng-template>
+          </div>
+
+          <!-- Mobile  -->
+          <button
+            class="md:hidden p-2 rounded-lg hover:bg-white/10 transition"
+            (click)="toggleMobileMenu()"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-7 w-7"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+
+          <!-- Mobile Slide Menu -->
+          <div
+            class="fixed top-0 left-0 h-screen w-[280px] z-50 md:hidden
+         bg-[#0d1117] border-r border-white/10 shadow-2xl
+         transform transition-transform duration-300 ease-out"
+            [class.translate-x-0]="mobileMenuOpen"
+            [class.-translate-x-full]="!mobileMenuOpen"
+          >
+            <!-- Header spacing -->
+            <div
+              class="h-[74px] flex items-center pl-4 gap-2 cursor-pointer"
+              routerLink="/home"
+            >
+              <img
+                src="logo-cinetrack.png"
+                class="w-44 md:w-48"
+                alt="CineTrack"
+              />
+            </div>
+
+            <div class="flex flex-col py-14 px-6 gap-6 bg-black">
+              <!-- NOT LOGGED -->
+              <ng-container *ngIf="!user(); else mobileLogged">
+                <a
+                  routerLink="/login"
+                  (click)="toggleMobileMenu()"
+                  class="px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 transition text-center"
+                >
+                  Connexion
+                </a>
+                <a
+                  routerLink="/register"
+                  (click)="toggleMobileMenu()"
+                  class="px-4 py-3 rounded-xl bg-white text-black hover:bg-gray-200 transition text-center"
+                >
+                  S'inscrire
+                </a>
+              </ng-container>
+
+              <!-- LOGGED -->
+              <ng-template #mobileLogged>
+                <!-- Profile -->
+                <a
+                  routerLink="/profile"
+                  (click)="toggleMobileMenu()"
+                  class="flex items-center gap-4 text-gray-300 hover:text-white transition"
+                >
+                  <div
+                    class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600
+                 flex items-center justify-center text-sm font-bold border border-white/20"
+                  >
+                    <img
+                      *ngIf="user()?.photoURL"
+                      [src]="user()?.photoURL"
+                      class="w-full h-full object-cover rounded-full"
+                    />
+                    <span *ngIf="!user()?.photoURL">
+                      {{
+                        user()?.displayName?.charAt(0) ||
+                          user()?.email?.charAt(0) ||
+                          'U' | uppercase
+                      }}
+                    </span>
+                  </div>
+                  <span class="font-medium">Profil</span>
+                </a>
+
+                <!-- Favorites -->
+                <a
+                  routerLink="/favorites"
+                  (click)="toggleMobileMenu()"
+                  class="group flex items-center gap-4 text-gray-300 hover:text-red-500 transition"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6 group-hover:scale-110 transition"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                    />
+                  </svg>
+                  <span class="font-medium">Favoris</span>
+                </a>
+
+                <!-- Watchlist -->
+                <a
+                  routerLink="/watchlist"
+                  (click)="toggleMobileMenu()"
+                  class="group flex items-center gap-4 text-gray-300 hover:text-blue-500 transition"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6 group-hover:scale-110 transition"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                    />
+                  </svg>
+                  <span class="font-medium">Watchlist</span>
+                </a>
+
+                <!-- Logout -->
+                <button
+                  (click)="logout()"
+                  class="group flex items-center gap-4 text-gray-300 hover:text-white transition mt-4"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                    />
+                  </svg>
+                  <span class="font-medium">Se déconnecter</span>
+                </button>
+              </ng-template>
+            </div>
           </div>
         </div>
       </header>
@@ -95,9 +328,16 @@ export class AppLayoutComponent {
   user = this.authService.currentUser;
   currentYear = new Date().getFullYear();
 
+  mobileMenuOpen = false;
+
+  toggleMobileMenu() {
+    this.mobileMenuOpen = !this.mobileMenuOpen;
+  }
+
   logout() {
     this.authService.logout().subscribe(() => {
-      this.router.navigate(['/login']);
+      this.router.navigate(['/home']);
+      this.mobileMenuOpen = false;
     });
   }
 }

@@ -20,3 +20,19 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .animate-fade-in {
   animation: fade-in 0.6s ease-out;
 }
+
+/* Custom Snackbar Styles */
+.green-snackbar {
+  background-color: #10b981 !important; /* Tailwind green-500 */
+  color: white !important;
+  font-weight: 500 !important;
+  border-radius: 8px !important;
+}
+
+.green-snackbar .mat-mdc-simple-snack-bar {
+  justify-content: center;
+}
+
+.green-snackbar .mat-mdc-snack-bar-action {
+  color: white !important;
+}

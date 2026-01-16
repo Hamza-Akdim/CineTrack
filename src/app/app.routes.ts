@@ -4,7 +4,7 @@ import { authGuard, publicGuard } from './guards/auth.guard';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: '/login',
+    redirectTo: '/home',
     pathMatch: 'full',
   },
   {
@@ -19,7 +19,6 @@ export const routes: Routes = [
     path: 'home',
     loadComponent: () =>
       import('./components/home/home.component').then((m) => m.HomeComponent),
-    canActivate: [authGuard],
   },
   {
     path: 'register',
@@ -35,7 +34,6 @@ export const routes: Routes = [
       import('./components/movie-detail/movie-detail.component').then(
         (m) => m.MovieDetailComponent
       ),
-    canActivate: [authGuard],
   },
   {
     path: 'profile',
@@ -54,7 +52,23 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'watchlist',
+    loadComponent: () =>
+      import('./components/watchlist/watchlist.component').then(
+        (m) => m.WatchlistComponent
+      ),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'search',
+    loadComponent: () =>
+      import('./components/search/search.component').then(
+        (m) => m.SearchComponent
+      ),
+  }, 
+
+  {
     path: '**',
-    redirectTo: '/login',
+    redirectTo: '/home',
   },
 ];

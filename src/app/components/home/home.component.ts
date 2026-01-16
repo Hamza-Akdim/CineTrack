@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AppLayoutComponent } from '../layout/app-layout.component';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -17,7 +19,7 @@ import { AppLayoutComponent } from '../layout/app-layout.component';
           <input
             type="text"
             [(ngModel)]="searchQuery"
-            (keyup.enter)="onSearch()"
+            (ngModelChange)="onSearch()"
             placeholder="Chercher les films ..."
             class="w-full px-5 py-3 pl-12 rounded-full text-black outline-none shadow-md"
           />
@@ -78,7 +80,7 @@ import { AppLayoutComponent } from '../layout/app-layout.component';
 
       <!-- MOVIES -->
       <div class="max-w-7xl mx-auto px-4 mt-4 pb-16">
-        
+
         <!-- SECTION TITLE -->
         <div class="mb-6 flex items-center gap-2">
             <h2 class="text-2xl font-bold text-white">
@@ -118,7 +120,7 @@ import { AppLayoutComponent } from '../layout/app-layout.component';
 
         <!-- PAGINATION -->
         <div class="flex justify-center items-center mt-12 gap-4">
-            <button 
+            <button
                 (click)="changePage(currentPage - 1)"
                 [disabled]="currentPage === 1"
                 class="px-4 py-2 bg-gray-800 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700 transition"
@@ -130,7 +132,7 @@ import { AppLayoutComponent } from '../layout/app-layout.component';
                 Page <span class="text-white">{{ currentPage }}</span> sur <span class="text-white">{{ totalPages }}</span>
             </span>
 
-            <button 
+            <button
                 (click)="changePage(currentPage + 1)"
                 [disabled]="currentPage === totalPages"
                 class="px-4 py-2 bg-gray-800 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700 transition"
@@ -176,9 +178,12 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.generateYears();
     this.loadMovies();
+
     this.tmdbService.getGenres().subscribe((data) => {
       this.genres = data.genres;
     });
+
+
   }
 
   generateYears() {
